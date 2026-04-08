@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hiwell Head of Operations - Strategic Dashboard | Berna Ergan</title>
+  <title>Strategic Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -423,24 +423,12 @@
       border-radius: 3px;
     }
     
-    .footer {
-      text-align: center;
-      padding: 24px;
-      font-size: 12px;
-      color: var(--text-tertiary);
-    }
-    
-    .footer a {
-      color: var(--primary);
-      text-decoration: none;
-    }
-  </style>
+    </style>
 </head>
 <body>
   <div class="header">
-    <h1>Head of Operations - Strategic Dashboard</h1>
-    <p>Berna Ergan | Hiwell Case Study | Interactive Companion</p>
-  </div>
+    <h1>Strategic Dashboard</h1>
+    </div>
 
   <!-- 6-Month Timeline -->
   <div class="section">
@@ -611,12 +599,7 @@
     </div>
   </div>
 
-  <div class="footer">
-    <p>Created by Berna Ergan | <a href="mailto:karagulleberna@gmail.com">karagulleberna@gmail.com</a> | +90 532 595 21 13</p>
-    <p style="margin-top:8px;">This dashboard accompanies the Hiwell Head of Operations Case Study submission.</p>
-  </div>
-
-  <script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     function calcLTV() {
       const price = parseInt(document.getElementById('price').value);
       const payout = parseInt(document.getElementById('payout').value);
@@ -645,15 +628,3 @@
         decision.className = 'result-decision scale';
       } else if (ratio >= 1.5) {
         decision.textContent = 'Optimize first';
-        decision.className = 'result-decision optimize';
-      } else {
-        decision.textContent = 'Pull back';
-        decision.className = 'result-decision pullback';
-      }
-    }
-    
-    // Initialize
-    calcLTV();
-  </script>
-</body>
-</html>
