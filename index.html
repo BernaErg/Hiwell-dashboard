@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Strategic Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2B579A;
+      --secondary: #505050;
+      --accent: #E07D00;
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8f9fa;
+      --text-primary: #1a1a1a;
+      --text-secondary: #6c757d;
+      --text-tertiary: #adb5bd;
+      --border: #e9ecef;
+      --success: #27A644;
+      --warning: #E5A100;
+      --danger: #D93025;
+    }
+    
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-primary: #1a1a1a;
+        --bg-secondary: #2d2d2d;
+        --text-primary: #f0f0f0;
+        --text-secondary: #a0a0a0;
+        --text-tertiary: #707070;
+        --border: #404040;
+      }
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      line-height: 1.5;
+      padding: 24px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+      padding: 24px;
+      background: var(--bg-primary);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    
+    .header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    
+    .section {
+      background: var(--bg-primary);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .section-title::before {
+      content: '';
+      width: 4px;
+      height: 20px;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+    
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    
+    .timeline-item {
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      padding: 16px;
+      border-left: 4px solid var(--primary);
+      transition: all 0.2s;
+    }
+    
+    .timeline-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .timeline-item.active {
+      border-left-color: var(--accent);
+      background: var(--bg-primary);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    
+    .timeline-month {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 500;
+    }
+    
+    .timeline-phase {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 6px 0;
+    }
+    
+    .timeline-tasks {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+    }
+    
+    .kpi-card {
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      padding: 14px;
+      position: relative;
+      transition: all 0.2s;
+    }
+    
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .kpi-status {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    
+    .kpi-status.green { background: var(--success); }
+    .kpi-status.yellow { background: var(--warning); }
+    .kpi-status.red { background: var(--danger); }
+    
+    .kpi-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+    
+    .kpi-value {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .kpi-target {
+      font-size: 10px;
+      color: var(--text-tertiary);
+      margin-top: 4px;
+    }
+    
+    .calc-container {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 20px;
+    }
+    
+    @media (max-width: 600px) {
+      .calc-container { grid-template-columns: 1fr; }
+    }
+    
+    .calc-inputs {
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      padding: 20px;
+    }
+    
+    .calc-result {
+      background: linear-gradient(135deg, var(--primary) 0%, #1e3f6f 100%);
+      border-radius: 8px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+    
+    .input-row {
+      margin-bottom: 16px;
+    }
+    
+    .input-row:last-child { margin-bottom: 0; }
+    
+    .input-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      font-weight: 500;
+    }
+    
+    .input-value {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+    
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--border);
+      outline: none;
+      -webkit-appearance: none;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    
+    .result-label {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-bottom: 4px;
+    }
+    
+    .result-ratio {
+      font-size: 48px;
+      font-weight: 600;
+      line-height: 1;
+    }
+    
+    .result-decision {
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-top: 12px;
+    }
+    
+    .result-decision.scale { background: rgba(39, 166, 68, 0.2); color: #90EE90; }
+    .result-decision.optimize { background: rgba(229, 161, 0, 0.2); color: #FFD700; }
+    .result-decision.pullback { background: rgba(217, 48, 37, 0.2); color: #FF6B6B; }
+    
+    .result-ltv {
+      font-size: 11px;
+      opacity: 0.7;
+      margin-top: 8px;
+    }
+    
+    .rhythm-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+    }
+    
+    .rhythm-week {
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      padding: 14px;
+      border-top: 4px solid var(--primary);
+      transition: all 0.2s;
+    }
+    
+    .rhythm-week:nth-child(2) { border-top-color: #5B9BD5; }
+    .rhythm-week:nth-child(3) { border-top-color: #70AD47; }
+    .rhythm-week:nth-child(4) { border-top-color: var(--accent); }
+    
+    .rhythm-week:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .rhythm-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    
+    .rhythm-task {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    
+    .country-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    
+    .country-card {
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      padding: 16px;
+      transition: all 0.2s;
+    }
+    
+    .country-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .country-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .country-score {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 12px;
+      background: var(--primary);
+      color: white;
+    }
+    
+    .criteria-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    
+    .criteria-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+    
+    .criteria-bar {
+      width: 80px;
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    
+    .criteria-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+    
+    .chart-container {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .pie-svg {
+      width: 160px;
+      height: 160px;
+    }
+    
+    .chart-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Strategic Dashboard</h1>
+  </div>
+
+  <div class="section">
+    <div class="section-title">6-month priority roadmap</div>
+    <div class="timeline">
+      <div class="timeline-item active">
+        <div class="timeline-month">Month 1-2</div>
+        <div class="timeline-phase">Discovery</div>
+        <div class="timeline-tasks">Department deep-dives, CEO alignment, unit economics audit, pain point identification</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-month">Month 2-3</div>
+        <div class="timeline-phase">Foundation</div>
+        <div class="timeline-tasks">KPI dashboard setup, meeting cadence, supply-demand mapping, cash burn analysis</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-month">Month 4-6</div>
+        <div class="timeline-phase">Execution</div>
+        <div class="timeline-tasks">SOPs documented, P&L ownership, 2-3 quick wins delivered, scalability foundation</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Weekly KPI dashboard</div>
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-status green"></div>
+        <div class="kpi-label">Weekly active sessions</div>
+        <div class="kpi-value">12,450</div>
+        <div class="kpi-target">Target: 10,000+</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-status green"></div>
+        <div class="kpi-label">Session completion</div>
+        <div class="kpi-value">91%</div>
+        <div class="kpi-target">Target: >85%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-status yellow"></div>
+        <div class="kpi-label">No-show rate</div>
+        <div class="kpi-value">14%</div>
+        <div class="kpi-target">Target: <15%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-status green"></div>
+        <div class="kpi-label">Gross margin</div>
+        <div class="kpi-value">52%</div>
+        <div class="kpi-target">Target: >40%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-status yellow"></div>
+        <div class="kpi-label">Net revenue retention</div>
+        <div class="kpi-value">83%</div>
+        <div class="kpi-target">Target: >80%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-status green"></div>
+        <div class="kpi-label">Therapist utilization</div>
+        <div class="kpi-value">74%</div>
+        <div class="kpi-target">Target: 60-90%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-status green"></div>
+        <div class="kpi-label">Cash runway</div>
+        <div class="kpi-value">18 mo</div>
+        <div class="kpi-target">Target: >12 mo</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Unit economics calculator</div>
+    <div class="calc-container">
+      <div class="calc-inputs">
+        <div class="input-row">
+          <div class="input-label"><span>Session price ($)</span><span class="input-value" id="price-val">50</span></div>
+          <input type="range" id="price" min="20" max="100" value="50" step="5" oninput="calcLTV()">
+        </div>
+        <div class="input-row">
+          <div class="input-label"><span>Therapist payout ($)</span><span class="input-value" id="payout-val">35</span></div>
+          <input type="range" id="payout" min="15" max="70" value="35" step="5" oninput="calcLTV()">
+        </div>
+        <div class="input-row">
+          <div class="input-label"><span>Sessions per month</span><span class="input-value" id="sessions-val">3</span></div>
+          <input type="range" id="sessions" min="1" max="8" value="3" step="1" oninput="calcLTV()">
+        </div>
+        <div class="input-row">
+          <div class="input-label"><span>User lifespan (months)</span><span class="input-value" id="lifespan-val">8</span></div>
+          <input type="range" id="lifespan" min="1" max="24" value="8" step="1" oninput="calcLTV()">
+        </div>
+        <div class="input-row">
+          <div class="input-label"><span>CAC ($)</span><span class="input-value" id="cac-val">60</span></div>
+          <input type="range" id="cac" min="10" max="150" value="60" step="5" oninput="calcLTV()">
+        </div>
+      </div>
+      <div class="calc-result">
+        <div class="result-label">LTV / CAC Ratio</div>
+        <div class="result-ratio" id="ratio">4.8</div>
+        <div id="decision" class="result-decision scale">Scale aggressively</div>
+        <div class="result-ltv">LTV: $<span id="ltv">288</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Monthly finance rhythm (13-week rolling)</div>
+    <div class="rhythm-container">
+      <div class="rhythm-week">
+        <div class="rhythm-title">Week 1</div>
+        <div class="rhythm-task">Actual vs budget variance analysis across all countries</div>
+      </div>
+      <div class="rhythm-week">
+        <div class="rhythm-title">Week 2</div>
+        <div class="rhythm-task">13-week rolling cash flow projection update</div>
+      </div>
+      <div class="rhythm-week">
+        <div class="rhythm-title">Week 3</div>
+        <div class="rhythm-task">Department cost review with all leads</div>
+      </div>
+      <div class="rhythm-week">
+        <div class="rhythm-title">Week 4</div>
+        <div class="rhythm-task">CEO/Board strategic finance review & planning</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Country expansion framework</div>
+    <div class="country-grid">
+      <div class="country-card">
+        <div class="country-name">Poland <span class="country-score">78/100</span></div>
+        <div class="criteria-row"><span class="criteria-label">Market size (20%)</span><div class="criteria-bar"><div class="criteria-fill" style="width:80%"></div></div></div>
+        <div class="criteria-row"><span class="criteria-label">Regulatory (20%)</span><div class="criteria-bar"><div class="criteria-fill" style="width:70%"></div></div></div>
+        <div class="criteria-row"><span class="criteria-label">Therapist supply (20%)</span><div class="criteria-bar"><div class="criteria-fill" style="width:85%"></div></div></div>
+        <div class="criteria-row"><span class="criteria-label">Payment infra (10%)</span><div class="criteria-bar"><div class="criteria-fill" style="width:90%"></div></div></div>
+        <div class="criteria-row"><span class="criteria-label">Language synergy (10%)</span><div class="criteria-bar"><div class="criteria-fill" style="width:60%"></div></div></div>
+      </div>
+      <div class="country-card">
+        <div class="country-name">Germany <span class="country-score">82/100</span></div>
+        <div class="criteria-row"><span class="criteria-label">Market size (20%)</span><div class="criteria-bar"><div class="criteria-fill" style="width:95%"></div></div></div>
+        <div class="criteria-row"><span class="criteria-label">Regulatory (20%)</span><div class="criteria-bar"><div class="criteria-fill" style="width:65%"></div></div></div>
+        <div class="criteria-row"><span class="criteria-label">Therapist supply (20%)</span><div class="criteria-bar"><div class="criteria-fill" style="width:90%"></div></div></div>
+        <div class="criteria-row"><span class="criteria-label">Payment infra (10%)</span><div class="criteria-bar"><div class="criteria-fill" style="width:95%"></div></div></div>
+        <div class="criteria-row"><span class="criteria-label">Language synergy (10%)</span><div class="criteria-bar"><div class="criteria-fill" style="width:50%"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">18-month revenue target split</div>
+    <div class="chart-container">
+      <svg class="pie-svg" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="40" fill="none" stroke="#2B579A" stroke-width="18" stroke-dasharray="201 251" transform="rotate(-90 50 50)"/>
+        <circle cx="50" cy="50" r="40" fill="none" stroke="#E07D00" stroke-width="18" stroke-dasharray="50 251" stroke-dashoffset="-201" transform="rotate(-90 50 50)"/>
+        <text x="50" y="46" text-anchor="middle" dominant-baseline="central" style="font-size:12px;font-weight:600;fill:var(--text-primary)">B2B</text>
+        <text x="50" y="58" text-anchor="middle" style="font-size:9px;fill:var(--text-secondary)">target 20%</text>
+      </svg>
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#2B579A"></div>B2C individual revenue (80%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#E07D00"></div>B2B corporate contracts (20%)</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function calcLTV() {
+      const price = parseInt(document.getElementById('price').value);
+      const payout = parseInt(document.getElementById('payout').value);
+      const sessions = parseInt(document.getElementById('sessions').value);
+      const lifespan = parseInt(document.getElementById('lifespan').value);
+      const cac = parseInt(document.getElementById('cac').value);
+      
+      document.getElementById('price-val').textContent = price;
+      document.getElementById('payout-val').textContent = payout;
+      document.getElementById('sessions-val').textContent = sessions;
+      document.getElementById('lifespan-val').textContent = lifespan;
+      document.getElementById('cac-val').textContent = cac;
+      
+      const processing = price * 0.03;
+      const profitPerSession = price - payout - processing;
+      const monthlyProfit = profitPerSession * sessions;
+      const ltv = Math.round(monthlyProfit * lifespan);
+      const ratio = (ltv / cac).toFixed(1);
+      
+      document.getElementById('ltv').textContent = ltv;
+      document.getElementById('ratio').textContent = ratio;
+      
+      const decision = document.getElementById('decision');
+      if (ratio >= 3) {
+        decision.textContent = 'Scale aggressively';
+        decision.className = 'result-decision scale';
+      } else if (ratio >= 1.5) {
+        decision.textContent = 'Optimize first';
+        decision.className = 'result-decision optimize';
+      } else {
+        decision.textContent = 'Pull back';
+        decision.className = 'result-decision pullback';
+      }
+    }
+    
+    calcLTV();
+  </script>
+</body>
+</html>
